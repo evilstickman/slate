@@ -2319,13 +2319,7 @@ curl https://api.backand.com/1/objects/items -H <span class="s2">"Authorization:
 </tbody></table>
 
 <h3 id="signin">.signin()</h3>
-<pre class="highlight shell tab-shell"><code><span class="c"># To obtain an access token using a username and password, use the following</span>
-<span class="c"># command. This uses environment variables to ease presentation of the</span>
-<span class="c"># information, and supplies the fields as data arguments to the cURL command.</span>
-<span class="c"># $USERNAME - user name (email address) to authenticate</span>
-<span class="c"># $PASSWORD - password for the user</span>
-<span class="c"># $APP_NAME - the name of the backand application you are connecting to</span>
-curl https://api.backand.com/token -d <span class="nv">username</span><span class="o">=</span><span class="nv">$USERNAME</span> -d <span class="nv">password</span><span class="o">=</span><span class="nv">$PASSWORD</span> -d <span class="nv">grant_type</span><span class="o">=</span>password -d <span class="nv">appName</span><span class="o">=</span><span class="nv">$APP_NAME</span>
+<pre class="highlight shell tab-shell"><code>curl -X POST -d <span class="s2">"username=&lt;username&gt;"</span> -d <span class="s2">"password=&lt;password&gt;"</span> -d <span class="s2">"appName=&lt;app name&gt;"</span> -d <span class="s2">"grant_type=password"</span> https://api.backand.com/token
 </code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">signin</span><span class="p">(</span><span class="nx">username</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'signin succeeded with user:'</span> <span class="o">+</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">);</span>
@@ -2334,6 +2328,23 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample Response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"access_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TGvnEBfhreaVwJspg0s_uDKppvjaA9jICQGsHSocmHnt8s98_rkMQIkf4fvd25j3i5QOJKPpZTpoCpdu7duxcjsUyLRYihLBhcyiSAv6PxeY4zG6SpL5CtfDl6PSpqJx571k_fSphmIha40bb0wvks3O-21E85hV7GdD3D0TJtSR0U4twJhaJl-HJmeGCEEmfr27FFtRu2Hb9pwkCNnlUNQast4s5fTlTOEiapspgUgfWT9s4V47t5TUuD6onMtDNQmXfekr-Yj2i_Q68L8a_Q"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"token_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bearer"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"expires_in"</span><span class="p">:</span><span class="w"> </span><span class="mi">86399</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"appName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bkndionicstarter"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@backand.com"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fullName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"regId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1009820</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"29"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Signin with username and password in order to get access_token to be used in all other calls. If you don&rsquo;t have users you should use anonymous token only.</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2358,7 +2369,15 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="signup">.signup()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">signup</span><span class="p">(</span><span class="nx">firstName</span><span class="p">,</span> <span class="nx">lastName</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">confirmPassword</span><span class="p">,</span> <span class="nx">parameters</span> <span class="o">=</span> <span class="p">{})</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Replace placeholder text with values for your user. Obtain signup token from</span>
+<span class="c"># the Security &amp; Auth section in your app dashboard.</span>
+<span class="c"># This uses environment variables to ease presentation of the</span>
+<span class="c"># information, and supplies the fields as data arguments to the cURL command.</span>
+<span class="c"># $SIGNUP_TOKEN - the name of the backand application you are connecting to</span>
+curl https://api.backand.com/token -d <span class="nv">username</span><span class="o">=</span><span class="nv">$USERNAME</span> -d <span class="nv">password</span><span class="o">=</span><span class="nv">$PASSWORD</span> -d <span class="nv">grant_type</span><span class="o">=</span>password -d <span class="nv">appName</span><span class="o">=</span><span class="nv">$APP_NAME</span>
+
+curl -X POST -d <span class="s2">"{'email':'user email','password':'user password','confirmPassword':'password confirmation','firstName':'first name','lastName':'last name'}"</span> -H <span class="s2">"SignUpToken: </span><span class="nv">$SIGNUP_TOKEN</span><span class="s2">"</span> https://api.backand.com/1/user/signup
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">signup</span><span class="p">(</span><span class="nx">firstName</span><span class="p">,</span> <span class="nx">lastName</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">confirmPassword</span><span class="p">,</span> <span class="nx">parameters</span> <span class="o">=</span> <span class="p">{})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2366,6 +2385,30 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample Response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"matt+test5@backand.com"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"currentStatus"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The user is ready to sign in"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"listOfPossibleStatus"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The user is ready to sign in"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The system is now waiting for the user to responed a verification email."</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The user signed up and is now waiting for an administrator approval."</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yHbb7a9S3yteUIo604KwwhchcrpE-wESafVtnnhQgAkj57ZxjWveNR63t64hqy8N2Gd_NPQhw6SAjNLv2mfYYP_rG-vELKe6gqEhqpWBFV43lD5IESH8k1SZldCmZiKLBvhCB_iHg4TfJQ8rUxh8ODYzaLALsSsn-I30ck7h21zn_LWDzxqxZa1Jq12tS0wrII7wOIyQiFCbsEmZiNMnlOR7Oz8CD7zhNHdOCFVh8Y801QIt3Jnn1hYz_4u1niWKJ5acTQqIEfXLZ7k65WnXuD46-UwZ0sORyKDj99o_xxEZpovchVm55cb5kRggqsmUjZBnP5N79fZiYA4tA8p_jPMBePIWE0q2WQ2m6CNJeJc"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Creates a new user in your app. in signup you must provide the basic details of username email, first name, last name and password:</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2410,7 +2453,8 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="changepassword">.changePassword()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">changePassword</span><span class="p">(</span><span class="nx">oldPassword</span><span class="p">,</span> <span class="nx">newPassword</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code> curl -X POST  -d <span class="s2">"{'oldPassword':'&lt;old password&gt;','newPassword':'&lt;new password&gt;'}"</span> -H <span class="s2">"Authorization: Bearer FrJQqDuGeo-U2b5QHhPeF2GS86U9EDTz79CEUbtbTPl032g2VCJPpiuAuGjAS0dR-u4XfxB2p0AgeOdkMulo3FEZWqOXIdzVdjJe4u2m9CyPzzK49YzY4SeD5Ea5p-6LbJLcpDJbE2nkzGv4TQw-S3pq-Tmo-RuuKnEKbEDOMfdSjlTed7Tks2ioeVjSKUwazwX4yglg0DPVavLPFrRp9KBNTnTNnoTOFd4zbC7gGxLjIPwU1-_T_N2UK7XIBlSGXbUBL_Zybxt1fWRlSrvxlw"</span> https://api.backand.com/1/user/changePassword
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">changePassword</span><span class="p">(</span><span class="nx">oldPassword</span><span class="p">,</span> <span class="nx">newPassword</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Password changed'</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2418,6 +2462,10 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>This call returns no data, only an HTTP Status Code</p>
+</blockquote>
+
 <p>Changes the password of the current user</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2442,7 +2490,8 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="socialsignin">.socialSignin()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">socialSignin</span><span class="p">(</span><span class="nx">provider</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># There is no cURL equivalent for this call</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">socialSignin</span><span class="p">(</span><span class="nx">provider</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'signin succeeded with user:'</span> <span class="o">+</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2473,7 +2522,9 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 <p>The <code class="prettyprint">.object</code> property contains functions related to basic database operations that can be performed on an object. You can also use this property to call the on-demand actions governed by an object in your system.</p>
 
 <h3 id="getlist">.getList()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="c1">// No filters</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> https://api.backand.com/1/objects/items
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="c1">// No filters</span>
 <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">getList</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
@@ -2499,6 +2550,89 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
   <span class="p">});</span>
 
 </code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"totalRows"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"__metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"73"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"int"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"unique"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"object"</span><span class="p">:</span><span class="w"> </span><span class="s2">"users"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"datetime"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"descriptives"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"label"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"dates"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-03-08 23:13:10Z"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">73</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test 1"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A first test item"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-03-08T23:13:10"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"__metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"74"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"int"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"unique"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"object"</span><span class="p">:</span><span class="w"> </span><span class="s2">"users"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"datetime"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"descriptives"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"label"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"dates"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-03-08 23:13:21Z"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">74</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test 2"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A second test item"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-03-08T23:13:21"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Fetches a list of records from the specified object. Uses <em>params</em> to store filter data</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2523,7 +2657,9 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="getone">.getOne()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">getOne</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> https://api.backand.com/1/objects/items/&lt;id&gt;
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">getOne</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2531,6 +2667,47 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"__metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"73"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"int"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"unique"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"object"</span><span class="p">:</span><span class="w"> </span><span class="s2">"users"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"datetime"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"descriptives"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"label"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"dates"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-03-08 23:13:10Z"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">73</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test 1"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A first test item"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-03-08T23:13:10"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Retrieves a single record from the specified object.</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2560,7 +2737,9 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="create">.create()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -X POST -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> -d <span class="s2">"{'name':'Test 3','description':'A third test item'}"</span> https://api.backand.com/1/objects/items
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'object created'</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2568,6 +2747,11 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"__metadata"</span><span class="p">:{</span><span class="s2">"id"</span><span class="p">:</span><span class="s2">"75"</span><span class="p">}}</span><span class="w">
+</span></code></pre>
 <p>Creates a record with the provided data in the specified object</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2597,7 +2781,9 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="update">.update()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -X PUT -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> -d <span class="s2">"{'description':'A first items updated description'}"</span> https://api.backand.com/1/objects/items/73
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'object updated'</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2605,6 +2791,10 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>This call has no response other than the status code by default.</p>
+</blockquote>
+
 <p>Updates a record with the specified ID in the specified object with the provided data.</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2639,7 +2829,9 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="remove">.remove()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -X DELETE -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> https://api.backand.com/1/objects/items/77
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'object removed'</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2647,6 +2839,11 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"__metadata"</span><span class="p">:{</span><span class="s2">"id"</span><span class="p">:</span><span class="s2">"77"</span><span class="p">}}</span><span class="err">⏎</span><span class="w">
+</span></code></pre>
 <p>Deletes a record from the specified object with the specified ID</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2670,8 +2867,10 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tr>
 </tbody></table>
 
-<h3 id="get">.get()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">action</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+<h3 id="action-get">.action.get()</h3>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> <span class="s2">"https://api.backand.com/1/objects/action/items?name=simpleOnDemand"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">action</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2679,6 +2878,11 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response (depends on action)</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"response"</span><span class="p">:</span><span class="s2">"Hello world!"</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Triggers on-demand custom actions that operate via HTTP GET requests</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2707,8 +2911,10 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tr>
 </tbody></table>
 
-<h3 id="post">.post()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">action</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+<h3 id="action-post">.action.post()</h3>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -X POST -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> <span class="s2">"https://api.backand.com/1/objects/action/items?name=simpleOnDemand"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">action</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2716,6 +2922,11 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response (depends on action)</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"response"</span><span class="p">:</span><span class="s2">"Hello world!"</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Triggers on-demand custom actions that operate via HTTP POST requests</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2754,7 +2965,8 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 <p>This property allows you to work with file actions, interacting with the related files directly. You can use this after you have finished creating a server-side action in the Back&amp; dashboard, in the Actions tab of an object (object -&gt; actions tab -&gt; Backand Files icon -&gt; name: &lsquo;files&rsquo;)</p>
 
 <h3 id="upload">.upload()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">upload</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">,</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">filedata</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code>curl -X POST  -d <span class="s2">"{'filename':'test.txt','filedata':'sample data'}"</span> -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> <span class="s2">"https://api.backand.com/1/objects/action/items?name=files"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">upload</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">,</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">filedata</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'file uploaded. url: '</span> <span class="o">+</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2762,6 +2974,11 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample Response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"url"</span><span class="p">:</span><span class="s2">"https://files.backand.io/bkndionicstarter/test.txt"</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Uploads a file for a server-side action</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2796,7 +3013,8 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="remove">.remove()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">,</span> <span class="nx">filename</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code>curl -X DELETE  -d <span class="s2">"{'filename':'test.txt'}"</span> -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> <span class="s2">"https://api.backand.com/1/objects/action/items?name=files"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">,</span> <span class="nx">filename</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'file deleted'</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2804,6 +3022,11 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample Response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{}</span><span class="w">
+</span></code></pre>
 <p>Removes a file from a server-side action file set.</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2837,7 +3060,8 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 <p>The <em>user</em> property returns data about the connected user (getUserDetails, getUsername, getUserRole, getToken, getRefreshToken).</p>
 
 <h3 id="getuserdetails">.getUserDetails()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">getUserDetails</span><span class="p">(</span><span class="nx">force</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code>curl -H <span class="s2">"Authorization:Bearer &lt;access token&gt;"</span> https://api.backand.com/api/account/profile
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">getUserDetails</span><span class="p">(</span><span class="nx">force</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2845,6 +3069,41 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="err">//</span><span class="w"> </span><span class="err">From</span><span class="w"> </span><span class="err">SDK</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"statusText"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"access_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7g9LM8ZHcvFLEIcSrdg8aYmpIK4gV9DYabab5spVsRmM6B_U3ovCWf8q6HeNFW4RMMQhsD6oiVpiTclHnO-J5qyFB2R8OyLl-ubrbIULvU0a7L8aS-cxPw7c4ij98zSPPa8kLkZBJULJRrcHn-fwmB4GygeTShNw7H1tqsHnIlcnk9X9ioj1CbjNjW4060gjTsGEOTGXACTrpQV4Qn3JD4XkSDNWySOG_15LorZdpiu7bcJ9T1EH9jnAIUyXA_0fIhFlDUsGV5Pr4EczaBufJQ"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"token_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bearer"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"expires_in"</span><span class="p">:</span><span class="w"> </span><span class="mi">86399</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"appName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bkndionicstarter"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john.doe@backand.com"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fullName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"regId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1009820</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"29"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="err">//</span><span class="w"> </span><span class="err">From</span><span class="w"> </span><span class="err">cURL</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="s2">"username"</span><span class="p">:</span><span class="s2">"matt+test@backand.com"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fullName"</span><span class="p">:</span><span class="s2">"Matt Billock"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"role"</span><span class="p">:</span><span class="s2">"User"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"appName"</span><span class="p">:</span><span class="s2">"bkndionicstarter"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>Gets the connected user&rsquo;s details.</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2864,7 +3123,13 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h2 id="query">.query</h2>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+
+<p>The <em>query</em> property lets you initiate a custom Back&amp; query using either HTTP GET or HTTP POST.</p>
+
+<h3 id="get">.get()</h3>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> https://api.backand.com/1/query/data/test1
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2872,10 +3137,19 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
-<p>The <em>query</em> property lets you initiate a custom Back&amp; query using either HTTP GET or HTTP POST.</p>
-
-<h3 id="get">.get()</h3>
-
+<blockquote>
+<p>Sample response varies based on query return values</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"support@backand.com"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"support"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"support"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="err">...</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
 <p>Calls a custom query using a HTTP GET</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2900,7 +3174,9 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 </tbody></table>
 
 <h3 id="post">.post()</h3>
-<pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
+<pre class="highlight shell tab-shell"><code><span class="c"># Env var $ANONYMOUS_TOKEN should contain your app's anonymous token</span>
+curl -X POST -H <span class="s2">"AnonymousToken: </span><span class="nv">$ANONYMOUS_TOKEN</span><span class="s2">"</span> -d <span class="s2">"{'params':{...}}"</span> https://api.backand.com/1/query/data/test1
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
   <span class="p">})</span>
@@ -2908,6 +3184,19 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
   <span class="p">});</span>
 </code></pre>
+<blockquote>
+<p>Sample response varies based on query return values</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"support@backand.com"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"support"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"support"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="err">...</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
 <p>Calls a custom query using a HTTP POST</p>
 
 <h4 id="parameters">Parameters</h4>
@@ -2933,6 +3222,295 @@ curl https://api.backand.com/token -d <span class="nv">username</span><span clas
 <td>params</td>
 <td>object</td>
 <td>Parameters to be passed to the query</td>
+</tr>
+</tbody></table>
+
+<h2 id="constants">.constants</h2>
+
+<p>This contains constants used by the SDK, and is provided for reference.</p>
+
+<table><thead>
+<tr>
+<th>constant</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>EVENTS</td>
+<td>Contains the names of events fired by the SDK upon completion of one of several authentication actions</td>
+</tr>
+<tr>
+<td>URLS</td>
+<td>Contains the URL tokens for the Backand API</td>
+</tr>
+<tr>
+<td>SOCIALS</td>
+<td>Contains the list of social media authentication providers</td>
+</tr>
+</tbody></table>
+
+<h2 id="helpers">.helpers</h2>
+
+<p>The <code class="prettyprint">.helpers</code> property provides helper methods for constructing some of the more complex objects in the SDK. This includes filters and sort clauses for queries, as well as exclude clauses. It also provides a helper for obtaining a storageAbstract object.</p>
+
+<h3 id="helpers-filter">.helpers.filter()</h3>
+<pre class="highlight shell tab-shell"><code><span class="c"># There is no cURL equivalent</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">filter</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"notEquals"</span><span class="p">,</span> <span class="s2">"John"</span><span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"fieldName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"name"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"operator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"notEquals"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Constructs a filter parameter for a GET query.</p>
+
+<h4 id="parameters">Parameters</h4>
+
+<table><thead>
+<tr>
+<th>name</th>
+<th>usage</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>fieldName</td>
+<td>the name of the field to apply a filter to</td>
+</tr>
+<tr>
+<td>operator</td>
+<td>the operator to apply</td>
+</tr>
+<tr>
+<td>value</td>
+<td>the value to use the operator to test against</td>
+</tr>
+</tbody></table>
+
+<p>Here&rsquo;s a list of the available operators and the data types on which they operate:</p>
+
+<table><thead>
+<tr>
+<th>Operator</th>
+<th>Applicable Data Types</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>equals</td>
+<td>all</td>
+</tr>
+<tr>
+<td>notEquals</td>
+<td>numeric, date, text</td>
+</tr>
+<tr>
+<td>greaterThan</td>
+<td>numeric, date</td>
+</tr>
+<tr>
+<td>greaterThanOrEqualsTo</td>
+<td>numeric, date</td>
+</tr>
+<tr>
+<td>lessThan</td>
+<td>numeric, date</td>
+</tr>
+<tr>
+<td>lessThanOrEqualsTo</td>
+<td>numeric, date</td>
+</tr>
+<tr>
+<td>empty</td>
+<td>numeric, date, text</td>
+</tr>
+<tr>
+<td>notEmpty</td>
+<td>numeric, date, text</td>
+</tr>
+<tr>
+<td>in</td>
+<td>relation</td>
+</tr>
+<tr>
+<td>startsWith</td>
+<td>text</td>
+</tr>
+<tr>
+<td>endsWith</td>
+<td>text</td>
+</tr>
+<tr>
+<td>contains</td>
+<td>text</td>
+</tr>
+</tbody></table>
+
+<h3 id="helpers-sort">.helpers.sort()</h3>
+<pre class="highlight shell tab-shell"><code><span class="c"># There is no cURL equivalent</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">sort</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"asc"</span><span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"fieldName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"name"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"order"</span><span class="p">:</span><span class="w"> </span><span class="s2">"asc"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Constructs a &ldquo;sort&rdquo; clause for a GET request</p>
+
+<h4 id="parameters">Parameters</h4>
+
+<table><thead>
+<tr>
+<th>name</th>
+<th>usage</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>fieldName</td>
+<td>the name of the field to apply a filter to</td>
+</tr>
+<tr>
+<td>order</td>
+<td>the order to sort (&lsquo;asc&rsquo; for ascending, &lsquo;desc&rsquo; for descending)</td>
+</tr>
+</tbody></table>
+
+<h3 id="helpers-exclude">.helpers.exclude()</h3>
+<pre class="highlight shell tab-shell"><code><span class="c"># There is no cURL equivalent</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">options</span>
+</code></pre>
+<blockquote>
+<p>Sample response</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="s2">"metadata"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"totalRows"</span><span class="p">:</span><span class="w"> </span><span class="s2">"totalRows"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"all"</span><span class="p">:</span><span class="w"> </span><span class="s2">"metadata,totalRows"</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The exclude option gives you a number of constants you can use to exclude system objects from results.</p>
+
+<h3 id="helpers-storageabstract">.helpers.storageAbstract()</h3>
+<pre class="highlight javascript tab-javascript"><code><span class="kr">export</span> <span class="kr">class</span> <span class="nx">MyStorage</span> <span class="kr">extends</span> <span class="nx">StorageAbstract</span><span class="p">{</span>
+  <span class="nx">constructor</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="p">}</span>
+  <span class="nx">setItem</span> <span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">getItem</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span> <span class="p">:</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nx">removeItem</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">delete</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nx">clear</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>The storageAbstract function allows you to define a new storage proxy for storing browsing data in the local session/information store. Simply provide an object that implements the following methods:</p>
+
+<table><thead>
+<tr>
+<th>function</th>
+<th>arguments</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>setItem</td>
+<td>id, val</td>
+<td>sets a value in the storage container</td>
+</tr>
+<tr>
+<td>getItem</td>
+<td>id</td>
+<td>gets a value from the storage container</td>
+</tr>
+<tr>
+<td>remove</td>
+<td>id</td>
+<td>removes a key from the storage container</td>
+</tr>
+<tr>
+<td>clear</td>
+<td>none</td>
+<td>clears the storage container</td>
+</tr>
+</tbody></table>
+
+<h2 id="defaults">.defaults</h2>
+
+<p>Contains a list of defaults for the SDK initialization parameters. The defaults are:</p>
+
+<table><thead>
+<tr>
+<th>parameter</th>
+<th>default value</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>appName</td>
+<td>null</td>
+</tr>
+<tr>
+<td>anonymousToken</td>
+<td>null</td>
+</tr>
+<tr>
+<td>useAnonymousTokenByDefault</td>
+<td>true</td>
+</tr>
+<tr>
+<td>signUpToken</td>
+<td>null</td>
+</tr>
+<tr>
+<td>apiUrl</td>
+<td>&lsquo;https://api.backand.com&rsquo;</td>
+</tr>
+<tr>
+<td>storage</td>
+<td>{}</td>
+</tr>
+<tr>
+<td>storagePrefix</td>
+<td>&lsquo;BACKAND_&rsquo;</td>
+</tr>
+<tr>
+<td>manageRefreshToken</td>
+<td>true</td>
+</tr>
+<tr>
+<td>runSigninAfterSignup</td>
+<td>true</td>
+</tr>
+<tr>
+<td>runSocket</td>
+<td>false</td>
+</tr>
+<tr>
+<td>socketUrl</td>
+<td>&lsquo;https://socket.backand.com&rsquo;</td>
+</tr>
+<tr>
+<td>exportUtils</td>
+<td>false</td>
+</tr>
+<tr>
+<td>isMobile</td>
+<td>false</td>
+</tr>
+<tr>
+<td>mobilePlatform</td>
+<td>&lsquo;ionic&rsquo;</td>
 </tr>
 </tbody></table>
 
@@ -5390,6 +5968,204 @@ It also requires a &lsquo;&lt;user key&gt;&rsquo; for your app - you can find th
 <span class="p">};</span>
 </code></pre>
 <p>From here, you can expand the bot to provide a wealth of functionality to your page&rsquo;s users. Simply expand upon the above code until it meets your requirements.</p>
+
+<h2 id="salesforceiq">SalesforceIQ</h2>
+
+<p>Building and maintaining customer relationships is crucial for driving sales to your platform. However, it can also be a complex process requiring integrating data from multiple sources and, more importantly, ensuring that data is accessible when it is needed. Customer Relationship Management (CRM) software is designed to make this data management and integration process much easier, providing you with the tools you need to drive customers through your sales funnel. In this article, we&rsquo;ll look at integrating a Backand application with Salesforce IQ, providing you with all of the tools you need to effectively leverage your customer data in your Backand application.</p>
+
+<h3 id="what-is-salesforceiq">What is SalesforceIQ?</h3>
+
+<p><a href="https://www.salesforceiq.com/">SalesforceIQ</a> is an out-of-the-box CRM solution that quickly gives you access to dynamic information tied into a full CRM solution. With Automatic Data Capture and enterprise-level intelligence under the hood, SalesforceIQ acts like your own personal assistant so you can focus on what matters most: selling. SalesforceIQ, in addition to providing easy integrations with tools like Google and Microsoft Exchange, also gives you the capability to dynamically access and manage your data through a series of robust APIs.</p>
+
+<h3 id="connecting-a-backand-application-with-salesforceiq">Connecting a Backand application with SalesforceIQ</h3>
+
+<p>Integrating Backand and SalesforceIQ is as simple as leveraging the full-featured <a href="https://api.salesforceiq.com/">API</a> provided by Salesforce from within your Backand application. While traditionally you&rsquo;d need to make these calls to the API from a server, you can achieve the same functionality in Backand by using our custom template action. This action provides an easy-to-use code template for making calls to the SalesforceIQ API, letting you update your user tracking data based upon user activity in your Backand app, or even update your Backand app&rsquo;s UI based upon what you know about your user in SalesforceIQ.</p>
+
+<p>Working with the <a href="https://api.salesforceiq.com/">SalesforceIQ API</a> provides you with full capabilities to create, retrieve, and update data on your users, as well as manage their information in SalesforceIQ. Communicating with their API is as simple as translating the cURL commands provided by Salesforce in their documentation into the appropriate $http calls that you can make from JavaScript. Simply provide the required authentication and identification headers, construct the URL, make the call, and handle the response when it arrives, dispatching it either directly to your application via a synchronous function call return, or emitting the data as an event using our Socket-based real-time communications functionality.</p>
+
+<h3 id="the-salesforceiq-action-template">The SalesforceIQ Action Template</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="cm">/* globals
+  $http - Service for AJAX calls
+  CONSTS - CONSTS.apiUrl for Backands API URL
+  Config - Global Configuration
+  socket - Send realtime database communication
+  files - file handler, performs upload and delete of files
+  request - the current http request
+*/</span>
+<span class="s1">'use strict'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">backandCallback</span><span class="p">(</span><span class="nx">userInput</span><span class="p">,</span> <span class="nx">dbRow</span><span class="p">,</span> <span class="nx">parameters</span><span class="p">,</span> <span class="nx">userProfile</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">API_KEY</span> <span class="o">=</span> <span class="s1">'-- YOUR API --'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">API_SECRET</span> <span class="o">=</span> <span class="s1">'-- YOUR SECRET --'</span><span class="p">;</span>
+
+    <span class="c1">//get accounts</span>
+    <span class="kd">var</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">$http</span><span class="p">({</span>
+        <span class="na">method</span><span class="p">:</span> <span class="s2">"GET"</span><span class="p">,</span>
+        <span class="na">url</span><span class="p">:</span> <span class="s2">"https://api.salesforceiq.com/v2/accounts"</span><span class="p">,</span>
+        <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"Accept"</span><span class="p">:</span><span class="s2">"application/json"</span><span class="p">,</span>
+            <span class="s2">"Authorization"</span><span class="p">:</span> <span class="s1">'basic '</span> <span class="o">+</span> <span class="nx">btoa</span><span class="p">(</span><span class="nx">API_KEY</span> <span class="o">+</span> <span class="s1">':'</span> <span class="o">+</span> <span class="nx">API_SECRET</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+<p>We have created an action template that will give you jump start with salesforceIQ. You can either trigger this action from an object&rsquo;s database transaction event actions, or create a new on-demand action that you can call from your app&rsquo;s client code. The sample JavaScript is provided by the template action, which is available as &ldquo;SalesforceIQ&rdquo; in the &ldquo;CRM &amp; ERP&rdquo; section of action templates.:</p>
+
+<p>This code provides you with all of the basic tools you need to get connected to the SalesforceIQ API. It takes in your SalesforceIQ API Key and API Secret, and performs a call to the &ldquo;/accounts&rdquo; endpoint to fetch accounts.</p>
+
+<h3 id="connecting-this-action-to-your-salesforceiq-account">Connecting this action to your SalesforceIQ account</h3>
+
+<p>To connect to SalesforceIQ, you&rsquo;ll first need to register for an account if you haven&rsquo;t done so. Once you&rsquo;ve signed up, follow these steps to obtain your API Key and API Secret:</p>
+
+<ol>
+<li>Open Settings under the gear icon</li>
+<li>Open the &lsquo;Integration&rsquo; tab under &lsquo;My Account Settings&rsquo;</li>
+<li>Under &lsquo;Create New Custom Integration,&rsquo; click &lsquo;Custom&rsquo;</li>
+<li>Set the name to &lsquo;Backand API,&rsquo; and provide a description</li>
+<li>Copy the &lsquo;API Key&rsquo; and &lsquo;API Secret&rsquo; from the integration page into the JavaScript Action code</li>
+<li>Click &lsquo;Save&rsquo;</li>
+</ol>
+
+<p>When this is completed, you should now be able to access all of your SalesforceIQ accounts from the custom JavaScript action.</p>
+
+<h3 id="setup-client-side-code">Setup client-side code:</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="k">return</span> <span class="nx">$http</span> <span class="p">({</span>
+  <span class="na">url</span><span class="p">:</span> <span class="nx">Backand</span><span class="p">.</span><span class="nx">getApiUrl</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/1/objects/action/&lt;your object name&gt;'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="s1">'&lt;your action name&gt;'</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+</code></pre>
+<p>Once you&rsquo;ve configured the action to connect to SalesforceIQ, you&rsquo;ll need to call the action from your client-side code. To do so, use the following JavaScript to construct a GET request and trigger your SalesforceIQ action:</p>
+
+<p>Simply replace &lsquo;your object name&rsquo; with the object that contains your SalesforceIQ custom action, and replace &lsquo;your action name&rsquo; with the name of the action that you provided while creating the integration.</p>
+
+<p>With these changes, you&rsquo;re now able to pull in any and all SalesforceIQ accounts available via their API! You can use a similar pattern to construct additional calls to the SalesforceIQ API - simply replace the URL and parameters in the custom SalesforceIQ action with the URL and parameters for the object you want to retrieve.</p>
+
+<h2 id="salesforce-crm">Salesforce CRM</h2>
+
+<p>As mentioned in our article on integrating with SalesforceIQ, building and maintaining customer relationships is crucial for driving sales to your platform. However, it can also be a complex process requiring integrating data from multiple sources and, more importantly, ensuring that data is accessible when it is needed. Customer Relationship Management (CRM) software is designed to make this data management and integration process much easier, providing you with the tools you need to drive customers through your sales funnel. In this article, we&rsquo;ll look at integrating a Backand application with Salesforce CRM, providing you with all of the tools you need to effectively leverage your customer data in your Backand application.</p>
+
+<h3 id="what-is-salesforce-crm">What is Salesforce CRM?</h3>
+
+<p><a href="https://www.salesforce.com/crm">Salesforce CRM</a> is the world&rsquo;s foremost CRM solution, and gives your sales teams the tools they need to close deals. Salesforce CRM is also built in the cloud, meaning that your sales team can increase their productivity and keep the sales pipeline filled with solid leads, all without the need to deploy additional hardware or work around speed limitations. Through Salesforce&rsquo;s <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm">REST API</a> you can get easy programmatic access to all of your customer data.</p>
+
+<h3 id="connecting-a-backand-application-with-salesforce-crm">Connecting a Backand application with Salesforce CRM</h3>
+
+<p>Integrating Backand and SalesforceIQ is as simple as leveraging the full-featured <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm">REST API</a> provided by Salesforce from within your Backand application. While traditionally you&rsquo;d need to make these calls to the API from a server, you can achieve the same functionality in Backand by using our custom template action. This action provides an easy-to-use code template for making calls to the Salesforce REST API, letting you update your user tracking data based upon user activity in your Backand app, or even update your Backand app&rsquo;s UI based upon what you know about your user in Salesforce.</p>
+
+<h3 id="the-salesforce-crm-action-template">The Salesforce CRM Action Template</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="cm">/* globals
+  $http - Service for AJAX calls
+  CONSTS - CONSTS.apiUrl for Backands API URL
+  Config - Global Configuration
+  socket - Send realtime database communication
+  files - file handler, performs upload and delete of files
+  request - the current http request
+*/</span>
+<span class="s1">'use strict'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">backandCallback</span><span class="p">(</span><span class="nx">userInput</span><span class="p">,</span> <span class="nx">dbRow</span><span class="p">,</span> <span class="nx">parameters</span><span class="p">,</span> <span class="nx">userProfile</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// write your code here</span>
+    <span class="kd">var</span> <span class="nx">baseUrl</span> <span class="o">=</span> <span class="s2">"https://eu11.salesforce.com/services/data/v37.0/"</span><span class="p">;</span>
+
+  <span class="c1">// This function manages authenticating with Salesforce, providing the access</span>
+  <span class="c1">// token as a return value</span>
+    <span class="kd">var</span> <span class="nx">loginSalesForce</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="s2">"-- Your Client Id --"</span><span class="p">;</span> <span class="c1">//Consumer Key</span>
+        <span class="kd">var</span> <span class="nx">secret</span> <span class="o">=</span> <span class="s2">"-- Your Secret Id --"</span><span class="p">;</span> <span class="c1">//Consumer Secret</span>
+
+        <span class="kd">var</span> <span class="nx">username</span> <span class="o">=</span> <span class="s2">"-- User Username --"</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">password</span> <span class="o">=</span> <span class="s2">"-- User Password --"</span><span class="p">;</span>
+
+        <span class="kd">var</span> <span class="nx">loginUrl</span> <span class="o">=</span> <span class="s2">"https://login.salesforce.com/services/oauth2/token"</span><span class="p">;</span>
+
+        <span class="kd">var</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">$http</span><span class="p">({</span>
+            <span class="na">method</span><span class="p">:</span> <span class="s2">"POST"</span><span class="p">,</span>
+            <span class="na">url</span><span class="p">:</span> <span class="nx">loginUrl</span><span class="p">,</span>
+            <span class="na">data</span><span class="p">:</span> <span class="s2">"grant_type=password"</span> <span class="o">+</span>
+                <span class="s2">"&amp;username="</span> <span class="o">+</span> <span class="nx">username</span> <span class="o">+</span>
+                <span class="s2">"&amp;password="</span> <span class="o">+</span> <span class="nx">password</span> <span class="o">+</span>
+                <span class="s2">"&amp;client_id="</span> <span class="o">+</span>  <span class="nx">client</span> <span class="o">+</span>
+                <span class="s2">"&amp;client_secret="</span> <span class="o">+</span> <span class="nx">secret</span><span class="p">,</span>
+            <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"Accept"</span><span class="p">:</span><span class="s2">"application/json"</span><span class="p">,</span>
+                <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="s2">"application/x-www-form-urlencoded"</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">//get access token first. Check if access token exists in cookie session</span>
+    <span class="kd">var</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'sf_access_token'</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">accessToken</span> <span class="o">==</span> <span class="kc">null</span><span class="p">){</span>
+        <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">loginSalesForce</span><span class="p">();</span>
+        <span class="nx">cookie</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="s1">'sf_access_token'</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">//get list of Opportunities</span>
+    <span class="kd">var</span> <span class="nx">opps</span> <span class="o">=</span> <span class="nx">$http</span><span class="p">({</span>
+        <span class="na">method</span><span class="p">:</span> <span class="s2">"GET"</span><span class="p">,</span>
+        <span class="na">url</span><span class="p">:</span> <span class="nx">baseUrl</span> <span class="o">+</span> <span class="s2">"sobjects/Opportunity"</span><span class="p">,</span>
+        <span class="na">headers</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Authorization"</span><span class="p">:</span> <span class="s2">"Bearer "</span> <span class="o">+</span> <span class="nx">accessToken</span><span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">opps</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+<p>We have created an action template that will give you jump start with salesforceCRM. You can either trigger this action with an object&rsquo;s CRUD event handler, or call it on-demand from your client code. The following is the content of the ready action template call
+&ldquo;salesforce CRM&rdquo; under the &ldquo;CRM &amp; ERP&rdquo; section:</p>
+
+<aside class="notice">The above code fetches the access token every time you call the action. You can improve the performance of this call by caching the token into a Backand Server-Side Cookie, and only performing the retrieval when the token has expired.</aside>
+
+<h3 id="setup-access-and-get-client-and-secret-keys">Setup access and get client and secret keys</h3>
+
+<p>Follow these steps to obtain your Salesforce CRM authentication information:</p>
+
+<ol>
+<li>Sign in to Salesforce CRM as a user with Admin rights</li>
+<li>Open Setup, found under the gear icon</li>
+<li>Open App Manager</li>
+<li>Click on &lsquo;New Connected App&rsquo;</li>
+<li>Provide &lsquo;Connected App Name&rsquo;, &lsquo;API Name&rsquo; and &lsquo;Contact Email&rsquo;</li>
+<li>Check &lsquo;Enable OAuth Settings&rsquo;
+
+<ol>
+<li>Check &lsquo;Enable for Device Flow&rsquo;</li>
+<li>Under &lsquo;Selected OAuth Scopes&rsquo; select &lsquo;Full Access,&rsquo; or any other permissions you need</li>
+</ol></li>
+<li>Click &lsquo;Save&rsquo;</li>
+<li>Copy &lsquo;Consumer Key&rsquo; into the client variable in the code</li>
+<li>Copy &lsquo;Consumer Secret&rsquo; into the secret variable in the code</li>
+</ol>
+
+<p>Once you&rsquo;ve obtained the consumer key and the consumer secret, you&rsquo;ll need to enable server-side security in Salesforce. To do so, follow these steps:
+1. From App Manager, select your new App and Click &lsquo;Manage&rsquo;
+2. Click &lsquo;Edit Polices&rsquo;
+3. Change &lsquo;IP Relaxation&rsquo; to &lsquo;Relax IP Restriction,&rsquo; or add Backand&rsquo;s IP to your organization&rsquo;s IP restrictions
+4. Change &lsquo;Timeout Value&rsquo; to 24 hours
+5. Click &lsquo;Save&rsquo;</p>
+
+<p>With that completed, you should now have full access to your CRM objects using the Salesforce REST API.</p>
+
+<h3 id="setup-client-side-code">Setup client-side code:</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="k">return</span> <span class="nx">$http</span> <span class="p">({</span>
+  <span class="na">url</span><span class="p">:</span> <span class="nx">Backand</span><span class="p">.</span><span class="nx">getApiUrl</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/1/objects/action/&lt;your object name&gt;'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="s1">'&lt;your action name&gt;'</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+</code></pre>
+<p>Once you&rsquo;ve configured the action to connect to Salesforce, you&rsquo;ll need to call the action from your client-side code. To do so, use the following JavaScript to construct a GET request and trigger your Salesforce action:</p>
+
+<p>Simply replace &lsquo;your object name&rsquo; with the object that contains your Salesforce custom action, and replace &lsquo;your action name&rsquo; with the name of the action that you provided while creating the integration.</p>
+
+<p>With these changes, you&rsquo;re now able to pull in any and all Salesforce accounts available via their API! You can use a similar pattern to construct additional calls to the Salesforce API - simply replace the URL and parameters in the custom SalesforceIQ action with the URL and parameters for the object you want to retrieve.</p>
 
       </div>
       <div class="dark-box">
