@@ -3758,6 +3758,280 @@ sagaMiddleware.run(rootSaga)
 - <a href="http://codepen.io/backand/pen/pRgqyx">codepen example (saga)</a>
 - <a href="https://github.com/backand/react-native-example/tree/sdk">react-native-example</a></p>
 
+<h2 id="vue-js">Vue.js</h2>
+
+<p>Vue.js is a progressive framework designed to provide an intuitive means by which a front-end developer can build their application. It is designed to be incrementally adaptable, allowing you to use it as often as you like, and provides a lightweight set of tools for adding dynamic functionality to a web app. By providing dynamic backing to the view model, you can easily make a Vue.js-based application into a large and feature-rich web app. In this post, we&rsquo;ll look at how we can use Backand&rsquo;s Vanilla SDK in a Vue.js-based application to provide the backing for that data service.</p>
+
+<p>Note: This example is also available on Codepen at http://codepen.io/backand/pen/ZLwwZg/?editors=1010</p>
+
+<h3 id="including-and-initializing-the-sdk">Including and Initializing the SDK</h3>
+<pre class="highlight html tab-html"><code><span class="c">&lt;!-- Include the Back&amp; SDK --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"https://cdn.backand.net/vanilla-sdk/1.1.2/backand.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre>
+<p>The first step in connecting your Vue.js app to Backand is to import the JavaScript file containing the Backand SDK. You can either do this through a package manager, or via our CDN.</p>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+  <span class="c1">// Other constructor code here</span>
+  <span class="na">beforeMount</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">backand</span><span class="p">.</span><span class="nx">init</span> <span class="o">&amp;&amp;</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">init</span><span class="p">({</span>
+      <span class="na">appName</span><span class="p">:</span> <span class="s1">'reactnativetodoexample'</span><span class="p">,</span>
+      <span class="na">signUpToken</span><span class="p">:</span> <span class="s1">'4c128c04-7193-4eb1-8f19-2b742a2a7bba'</span><span class="p">,</span>
+      <span class="na">anonymousToken</span><span class="p">:</span> <span class="s1">'2214c4be-d1b1-4023-bdfd-0d83adab8235'</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="c1">// Other constructor code here</span>
+<span class="p">});</span>
+</code></pre>
+<p>Once you&rsquo;ve included the SDK, you&rsquo;ll have access to the functionality via the global object backand. You&rsquo;ll next use this to initialize our connection to Backand in the constructor for your app&rsquo;s Vue instance. We recommend putting the initialization in the beforeMount lifecycle hook, but any location or hook that initializes the SDK before it is used should be sufficient:</p>
+
+<p>With that, the Backand SDK is initialized. This post uses a pre-built demo app, reactnativetodoexample, and its associated keys. If you wish to connect this demo to your own Backand application, simply replace appName, signUpToken, and anonymousToken with the correct values from your Backand application&rsquo;s dashboard. Aside from updating the data model to include the ToDo object, the only thing you will need to do to ensure your app operates in the same way is to add the relevant custom actions when editing a ToDo item (see below).</p>
+
+<h3 id="loading-the-object-data">Loading the object data</h3>
+
+<blockquote>
+<p>Next, you need to define a global method that knows how to load the object data from your Backand application. To do this, first define an empty data member to store the future results from the API:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+  <span class="c1">// Other constructor code here</span>
+  <span class="na">data</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">todos</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="c1">// beforeMount: () =&gt; { ...</span>
+<span class="p">});</span>
+
+</code></pre>
+<blockquote>
+<p>This data member will hold the list of ToDo items obtained from the server. Next, we&rsquo;ll define a global method to populate this data member:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+  <span class="c1">// Other constructor code here</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">fetchTodos</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="kd">let</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">sort</span><span class="p">:</span> <span class="p">[</span><span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">sort</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'creationDate'</span><span class="p">,</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">sort</span><span class="p">.</span><span class="nx">orders</span><span class="p">.</span><span class="nx">desc</span><span class="p">)],</span>
+        <span class="na">exclude</span><span class="p">:</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">all</span><span class="p">,</span>
+        <span class="na">pageSize</span><span class="p">:</span> <span class="mi">1000000</span><span class="p">,</span>
+        <span class="na">pageNumber</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="p">}</span>
+      <span class="nx">backand</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">getUserDetails</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span><span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">userId</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">params</span><span class="p">.</span><span class="nx">filter</span> <span class="o">=</span> <span class="p">[</span><span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">filter</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'user'</span><span class="p">,</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">filter</span><span class="p">.</span><span class="nx">operators</span><span class="p">.</span><span class="nx">relation</span><span class="p">.</span><span class="k">in</span><span class="p">,</span> <span class="nx">user</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">userId</span><span class="p">)];</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">getList</span><span class="p">(</span><span class="s1">'todos'</span><span class="p">,</span> <span class="nx">params</span><span class="p">);</span>
+      <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span><span class="o">=&gt;</span> <span class="p">{</span> <span class="k">this</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="c1">// Other constructor code here</span>
+<span class="p">});</span>
+</code></pre>
+<p>This function first clears out the todos data member, then defines a set of filter params using helper methods in the SDK (refer to our documentation for more information). Then, it calls backand.user.getUserDetails() to determine if the list should be restricted to the currently logged-in user. Finally, the method calls backand.object.getList() to fetch the list of objects in the SDK, and then updates the todos data container in the promise resolution block.</p>
+
+<blockquote>
+<p>Now, you simply need to call fetchTodos() in the appropriate location in the Vue lifecycle. To load the data when mounting is complete, you can add it to the &ldquo;mounted&rdquo; handler like so:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+  <span class="c1">// Other constructor code here</span>
+  <span class="na">mounted</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">fetchTodos</span><span class="p">();</span>
+  <span class="p">},</span>
+  <span class="c1">// Other constructor code here</span>
+<span class="p">});</span>
+</code></pre>
+<h3 id="creating-editing-and-deleting-objects">Creating, Editing, and Deleting Objects</h3>
+
+<blockquote>
+<p>The following code is a handler for an x-template component titled todo-form, which is used to create a new ToDo entry in the application:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">'todo-form'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">template</span><span class="p">:</span> <span class="s1">'#todo-form'</span><span class="p">,</span>
+  <span class="na">data</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">input</span><span class="p">:</span> <span class="s1">''</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">create</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// console.log(this.input)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">backand</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">getUserDetails</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span><span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">objectName</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">text</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">input</span><span class="p">,</span>
+            <span class="na">creationDate</span><span class="p">:</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">toISOString</span><span class="p">(),</span>
+            <span class="na">completionDate</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+            <span class="na">user</span><span class="p">:</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">userId</span>
+          <span class="p">});</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span><span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">input</span> <span class="o">=</span> <span class="s1">''</span><span class="p">).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+</code></pre>
+<p>Once you&rsquo;ve got the basic display up and running, you&rsquo;ll want to add methods to create, update, and delete the ToDo items based on user actions.</p>
+
+<p>Following a similar pattern to the initial load, this code first checks for a user context. If a user is not logged in, this call will have a value of null. Otherwise, we can use the userId of the active user to assign ownership of the new ToDo item. The code then calls backand.object.create() to create the record in your Backand application.</p>
+
+<blockquote>
+<p>You can follow a similar pattern when updating an object:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kr">const</span> <span class="nx">todoItem</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">props</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">'todo'</span><span class="p">:</span> <span class="nb">Object</span>
+  <span class="p">},</span>
+  <span class="na">template</span><span class="p">:</span> <span class="s1">'#todo-item'</span><span class="p">,</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">update</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">objectName</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="k">this</span><span class="p">.</span><span class="nx">todo</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">completionDate</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">todo</span><span class="p">.</span><span class="nx">completionDate</span> <span class="p">?</span> <span class="kc">null</span> <span class="p">:</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">toISOString</span><span class="p">()</span>
+      <span class="p">})).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">remove</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">objectName</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre>
+<p>This function demonstrates how to update a ToDo item&rsquo;s completion date using backand.object.update() - simply provide the object name, the object ID, and the collection of changes to be made. The above method also provides deletion functionality with the remove method. Simply provide the object name and the ID of the ToDo item to delete the entry from your database.</p>
+
+<h3 id="keeping-the-app-up-to-date">Keeping the app up-to-date</h3>
+
+<blockquote>
+<p>First, create the appropriate Custom JavaScript actions in your Backand app&rsquo;s dashboard, and have them emit an event titled &ldquo;update_todos&rdquo; as follows:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="nx">socket</span><span class="p">.</span><span class="nx">emitAll</span><span class="p">(</span><span class="s2">"update_todos"</span><span class="p">,</span> <span class="p">{});</span>
+</code></pre>
+<p>While you now have a fully-functional CRUD interface for the &ldquo;todo&rdquo; object, you have not yet built a way for your application to receive - and respond to - updates. You can accomplish this using Backand&rsquo;s Realtime Communications capability.</p>
+
+<p>This will send a socket message to all connected clients. At the moment we do not provide any parameters to this call (just an empty object - {}), but you can replace this with any of the variables available to your custom action, such as the dbRow that was just modified.</p>
+
+<blockquote>
+<p>First, include the Socket.io library in the appropriate location in your code:</p>
+</blockquote>
+<pre class="highlight html tab-html"><code>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"https://cdn.backand.net/socket.io/1.4.5/socket.io.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre>
+<p>Now that you have a set of actions designed to announce changes to your ToDo database object, we need to configure the client side to receive socket communications.</p>
+
+<blockquote>
+<p>Once that&rsquo;s done, we need to set the SDK to enable socket mode:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+  <span class="c1">// Other constructor code here</span>
+  <span class="na">beforeMount</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">backand</span><span class="p">.</span><span class="nx">init</span> <span class="o">&amp;&amp;</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">init</span><span class="p">({</span>
+      <span class="na">appName</span><span class="p">:</span> <span class="s1">'reactnativetodoexample'</span><span class="p">,</span>
+      <span class="na">signUpToken</span><span class="p">:</span> <span class="s1">'4c128c04-7193-4eb1-8f19-2b742a2a7bba'</span><span class="p">,</span>
+      <span class="na">anonymousToken</span><span class="p">:</span> <span class="s1">'2214c4be-d1b1-4023-bdfd-0d83adab8235'</span><span class="p">,</span>
+      <span class="na">runSocket</span><span class="p">:</span> <span class="kc">true</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="c1">// Other constructor code here</span>
+<span class="p">});</span>
+</code></pre>
+<blockquote>
+<p>Finally, you need to add an event handler. Update your mounted handler to include the event handler function as follows:</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">myApp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+  <span class="c1">// Other constructor code here</span>
+
+  <span class="na">mounted</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">fetchTodos</span><span class="p">();</span>
+    <span class="nx">backand</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'update_todos'</span><span class="p">,</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">fetchTodos</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="c1">// Other constructor code here</span>
+<span class="p">});</span>
+</code></pre>
+<p>This function handles all update_todos events the same way - by reloading the entire list from the server. You can use a similar technique to write different handlers for each database operation, or to perform other types of logic based on your application&rsquo;s needs.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>With the above code, you now have a simple data service that you can use to update your Vue.js app&rsquo;s user interface with results from a Backand application. You can create, update, and delete records at will in a responsive manner, no server code required. With Backand, you can accelerate your Vue.js development, focusing on what makes your app unique, and leave the server side to us.</p>
+
+<h2 id="jquery">jQuery</h2>
+
+<p>JQuery is the most widely-deployed JavaScript library. It provides a comprehensive set of responsive tools for dynamically working with an HTML page&rsquo;s DOM, and is responsible for establishing and guiding a lot of the patterns that are the standard in web development. In this article, we&rsquo;ll look at how you can integrate the Back&amp; Vanilla SDK with an app built with JQuery.</p>
+
+<p>Note: The code for this article is available on CodePen at http://codepen.io/backand/pen/VPRpBN?editors=1010</p>
+
+<h3 id="including-and-initializing-the-sdk">Including and Initializing the SDK</h3>
+<pre class="highlight html tab-html"><code><span class="c">&lt;!-- Include the Back&amp; SDK --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"https://cdn.backand.net/vanilla-sdk/1.1.2/backand.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre>
+<p>The first step in connecting your JQuery-based web app to Backand is to include the JavaScript file containing the Backand SDK. You can either do this through a package manager, or via our CDN.</p>
+
+<h3 id="creating-the-service">Creating the Service</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">dataService</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">backand</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span>
+      <span class="p">{</span><span class="na">appName</span><span class="p">:</span> <span class="s1">'reactnativetodoexample'</span><span class="p">,</span>
+       <span class="na">signUpToken</span><span class="p">:</span> <span class="s1">'4c128c04-7193-4eb1-8f19-2b742a2a7bba'</span><span class="p">,</span>
+       <span class="na">anonymousToken</span><span class="p">:</span> <span class="s1">'2214c4be-d1b1-4023-bdfd-0d83adab8235'</span><span class="p">,</span>
+       <span class="na">runSocket</span><span class="p">:</span> <span class="kc">false</span>
+      <span class="p">}</span>
+    <span class="p">);</span>   
+  <span class="p">},</span>
+  <span class="c1">// Other code here</span>
+<span class="p">};</span>
+</code></pre>
+<p>Once you&rsquo;ve included the SDK, you&rsquo;ll have access to the functionality via the global object backand. To integrate Back&amp; with a JQuery-based web app, we&rsquo;ll make use of a global service variable that will wrap the SDK. This service will handle initialization of the sdk, and provide all of the tools necessary to work with a Backand application. We&rsquo;ll start by declaring the service and initializing Backand with the following code:</p>
+
+<p>This defines an object - dataService - that can be used to interact with the Backand SDK. In the data service, we define a method - init - that is used to initialize the SDK&rsquo;s connection to a Backand application. Simply call dataService.init() at the approrpriate location in your app&rsquo;s initialization code, and the SDK is ready to use (in the example, we do this in the $(document).ready handler, but this is not required).</p>
+
+<p>This content uses a pre-built demo app, reactnativetodoexample, and its associated keys. If you wish to connect this demo to your own Backand application, simply replace appName, signUpToken, and anonymousToken with the correct values from your Backand application&rsquo;s dashboard. Aside from updating the data model to include the ToDo object, the only thing you will need to do to ensure your app operates in the same way is to add the relevant custom actions when editing a ToDo item (see below).</p>
+
+<h3 id="fetching-and-manipulating-the-data">Fetching and Manipulating the Data</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">dataService</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">//other code here</span>
+  <span class="na">getList</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span>  <span class="p">{</span>
+          <span class="na">sort</span><span class="p">:</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">sort</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'creationDate'</span><span class="p">,</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">sort</span><span class="p">.</span><span class="nx">orders</span><span class="p">.</span><span class="nx">desc</span><span class="p">),</span>
+          <span class="na">exclude</span><span class="p">:</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">exclude</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">all</span><span class="p">,</span>
+          <span class="na">pageSize</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="na">pageNumber</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="na">filter</span><span class="p">:</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">filter</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'completionDate'</span><span class="p">,</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">filter</span><span class="p">.</span><span class="nx">operators</span><span class="p">.</span><span class="nx">date</span><span class="p">.</span><span class="nx">empty</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="p">};</span>
+        <span class="k">return</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">getList</span><span class="p">(</span><span class="s1">'todos'</span><span class="p">,</span><span class="nx">params</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="c1">// Other code here</span>
+<span class="p">};</span>
+</code></pre>
+<p>Now that our app is wired up to Backand, we&rsquo;ll want to start writing code to work with our Backand application&rsquo;s objects. We can retrieve a list of &ldquo;todo&rdquo; objects from the server by adding a property to the dataService object, getList, that calls the appropriate SDK method</p>
+
+<p>This function first defines a set of filter params using helper methods in the SDK (refer to our documentation for more information). It then calls backand.object.getList() to fetch the list of objects in the SDK. The result of this call - a promise - is then passed back to the calling code. The calling code can then create its own success and failure handlers, using .then and .catch, and update internal state appropriately.</p>
+
+<blockquote>
+<p>You can use this technique to wrap every call in the Backand SDK, providing your JQuery code with full access to the server.</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">dataService</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">//other code here</span>
+  <span class="na">create</span><span class="p">:</span><span class="kd">function</span><span class="p">(</span><span class="nx">text</span><span class="p">){</span>
+    <span class="k">return</span> <span class="nx">backand</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'todos'</span><span class="p">,</span>
+          <span class="p">{</span><span class="s2">"text"</span><span class="p">:</span><span class="nx">text</span><span class="p">,</span><span class="s2">"creationDate"</span><span class="p">:</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()});</span>
+  <span class="p">},</span>
+  <span class="c1">// Other code here</span>
+<span class="p">};</span>
+</code></pre>
+<p>From this point onward, working with the SDK is a matter of writing wrapper methods in the dataService object for each SDK method with which you wish to interact. Backand provides interfaces for all of the common database manipulation tasks. For example, the call in the sidebar defines a method - create - that creates a new entry in the database:</p>
+
+<h3 id="handling-responses">Handling Responses</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code><span class="kd">var</span> <span class="nx">loadList</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">dataService</span><span class="p">.</span><span class="nx">getList</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+<span class="c1">// call a helper function to populate results in our UI</span>
+      <span class="nx">$</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">todo</span><span class="p">){</span>
+        <span class="nx">appendTodo</span><span class="p">(</span><span class="nx">todo</span><span class="p">.</span><span class="nx">text</span><span class="p">,</span><span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+      <span class="p">})</span>
+   <span class="p">})</span>
+<span class="p">}</span>
+</code></pre>
+<p>All Backand SDK methods return a promise, performing the tasks requested asynchronously. To handle the responses, we simply need to write the appropriate handlers for the .then and .catch calls. In the code to the side, for example, we write a simple set of handlers for the getList call.</p>
+
+<p>As JQuery is a very flexible framework, it is hard to provide concrete guidance on exactly where SDK should take place in terms of the program&rsquo;s execution. The CodePen example demonstrates one method of creating this component, but you do not need to mimic the code structure there exactly. The key component is to ensure that backand.init() is called prior to any SDK calls taking place, otherwise the calls from the SDK will fail.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>With the above code, you now have a simple data service that you can use to update your JQuery-based app&rsquo;s user interface with results from a Backand application. You can make full use of the SDK, with the capability to create, update, and delete records at will in a responsive manner, no server code required. With Backand, you can accelerate your JQuery front-end development, focusing on what makes your app unique, and leave the server side to us.</p>
+
           <h1 id="common-use-cases">Common Use cases</h1>
 
 <p>Below are some common use cases for Backand applications</p>
@@ -4729,68 +5003,66 @@ You can use the following JSON mode:</p>
 
 <h2 id="retrieving-data-from-facebook-using-the-graph-api">Retrieving data from Facebook using the Graph API</h2>
 
-<p>To retrieve data from Facebook using the Graph API, get the Facebook user ID after the user signed up to your Backand app.
-Once you have the Facebook user ID, use the Facebook graph API to retrieve data or perform other actions.</p>
+<p>Once you&rsquo;ve integrated with facebook, you can use Facebook&rsquo;s <a href="https://developers.facebook.com/docs/graph-api">Graph API</a> to augment your user data with information directly from the user&rsquo;s Facebook account. To do so, you&rsquo;ll just need to grab the user&rsquo;s Facebook User ID, and use the Graph API to retrieve data, update or publish new content, or any of the other functionality Facebook has to offer.</p>
 
-<p>To get the Facebook user ID (FUID) in Backand, follow these steps:</p>
+<h3 id="obtaining-the-facebook-user-id">Obtaining the Facebook User ID</h3>
+
+<p>To store the user&rsquo;s Facebook user ID (FUID) in Backand, follow these steps:</p>
 
 <ol>
-<li>Open Security &amp; Auth &gt;&gt; Security actions menu and Edit <strong>&ldquo;beforeSocialSignup&rdquo;</strong> action</li>
-<li>Change the <strong>Where Condition</strong> to true (bottom of the page)</li>
-<li>Uncomment the code that saves the Facebook user id: <code class="prettyprint">userInput.fuid = parameters.socialProfile.additionalValues.id;</code></li>
+<li>Open Security &amp; Auth &gt;&gt; Security actions menu and edit the <strong>&ldquo;beforeSocialSignup&rdquo;</strong> action</li>
+<li>Change the <strong>Where Condition</strong> of this action to &ldquo;true&rdquo; (this is set at the bottom of the content pane)</li>
+<li>Uncomment the provided code that saves the Facebook user id: <code class="prettyprint">userInput.fuid = parameters.socialProfile.additionalValues.id;</code></li>
 <li>Save the Action</li>
 </ol>
 
-<p>Next you need to add the fuid field in the users object:</p>
+<p>Next, you need to add the FUID field to the &ldquo;users&rdquo; object:</p>
 
 <ol>
-<li>Open the model page under <strong>objects</strong> menu</li>
-<li>Add new Field in the users object named <strong>fuid</strong></li>
-<li>Click <strong>Validate &amp; Update</strong> and <strong>Ok</strong> in the dialog</li>
+<li>Open the model page, from the <strong>Objects</strong> menu</li>
+<li>Edit the model to add a new field - <strong>fuid</strong>, type string - to the &ldquo;users&rdquo; object</li>
+<li>Click <strong>Validate &amp; Update</strong> to validate the model, then <strong>Ok</strong> in the confirmation dialog to save your changes.</li>
 </ol>
 
-<p>Now, when a user signs up to your app using Facebook as a social login provider, you will see the users&rsquo;s FUID in the <strong>users</strong> object.</p>
+<p>From this point onward, any user that signs up to your app using Facebook as their social media provider will have their FUID automatically populated in the <strong>users</strong> object.</p>
 
-<h3 id="getting-facebook-data-in-backand-code">Getting Facebook data in Backand code</h3>
-
-<p>Once you have the Facebook user ID, use the Graph API to access any available Facebook data.</p>
-
-<ol>
-<li><a href="https://developers.facebook.com/docs/graph-api" target="\_blank">The FB Graph API docs</a></li>
-<li>You also would need access token of your app, use this <a href="https://developers.facebook.com/tools/accesstoken/" target="\_blank">FB tool</a> to get it.</li>
-<li>More <a href="https://developers.facebook.com/tools-and-support/" target="\_blank">FB tools</a></li>
-<li>For example, to get a user&rsquo;s friends use the following JavaScript action code:</li>
-</ol>
-<pre class="highlight javascript tab-javascript"><code>    <span class="kd">var</span> <span class="nx">fuid</span> <span class="o">=</span> <span class="s2">"176102422846507"</span><span class="p">;</span>
-    <span class="kd">var</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="s2">"EAAWouLyM4lEBADjVlK9yslq9YNjx7S5UUx9oKUo6BWxsj9qc77ZCuKZAPvBQUIulpieNJIJ0Uit3K0UFR0oxjxl68DupTb0uoJFXPQFUdTOlneLEprG6b8WxuYN3AX6m05hKpFbBPKczCab1OUetevdvkZCO6rtPUQEUtc68gZDZD"</span><span class="p">;</span>
+<h3 id="getting-facebook-data-into-backand-code">Getting Facebook data into Backand code</h3>
+<pre class="highlight javascript tab-javascript--persistent"><code>    <span class="kd">var</span> <span class="nx">fuid</span> <span class="o">=</span> <span class="s2">"176102422846507"</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">facebookAccessToken</span> <span class="o">=</span> <span class="s2">"EAAWouLyM4lEBADjVlK9yslq9YNjx7S5UUx9oKUo6BWxsj9qc77ZCuKZAPvBQUIulpieNJIJ0Uit3K0UFR0oxjxl68DupTb0uoJFXPQFUdTOlneLEprG6b8WxuYN3AX6m05hKpFbBPKczCab1OUetevdvkZCO6rtPUQEUtc68gZDZD"</span><span class="p">;</span>
 
     <span class="kd">var</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">$http</span><span class="p">({</span>
         <span class="na">method</span><span class="p">:</span> <span class="s2">"GET"</span><span class="p">,</span>
         <span class="na">url</span><span class="p">:</span><span class="s2">"https://graph.facebook.com/v2.8/"</span> <span class="o">+</span> <span class="nx">fuid</span> <span class="o">+</span> <span class="s2">"/friends?fields=id,name,gender"</span><span class="p">,</span>
         <span class="na">params</span><span class="p">:{</span>
-            <span class="s2">"access_token"</span><span class="p">:</span> <span class="nx">accessToken</span>
+            <span class="s2">"access_token"</span><span class="p">:</span> <span class="nx">facebookAccessToken</span>
         <span class="p">},</span>
         <span class="na">headers</span><span class="p">:{</span><span class="s2">"Content-Type"</span><span class="p">:</span><span class="s2">"application/json"</span><span class="p">}</span>
     <span class="p">});</span>
 
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
 </code></pre>
+<p>Once you have the Facebook user ID, you can use the Graph API to access any available Facebook data.</p>
+
+<ul>
+<li>See the Facebook Graph API docs at <a href="https://developers.facebook.com/docs/graph-api">https://developers.facebook.com/docs/graph-api</a></li>
+<li>You&rsquo;ll also need a valid Facebook Access Token for your application. Use <a href="https://developers.facebook.com/tools/accesstoken/">Facebook&rsquo;s access token tool</a> to obtain one.</li>
+<li>Facebook offers <a href="https://developers.facebook.com/tools-and-support/">additional tools</a></li>
+</ul>
+
+<p>At this point, you&rsquo;re ready to work with the API. For example, you can use this sample code to get a list of a user&rsquo;s friends in Facebook:</p>
+
 <h3 id="getting-a-facebook-profile-image">Getting a Facebook profile image</h3>
+<pre class="highlight html tab-html"><code><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"#"</span><span class="nt">&gt;</span>http://graph.facebook.com/{fuid}/picture<span class="nt">&lt;/a&gt;</span>
+</code></pre>
+<p>You can easily obtain a user&rsquo;s Facebook profile using a single URL reference. Here is the template:</p>
 
-<ol>
-<li>To get the Facebook profile image you just need to point to the following URL with a correct FUID:</li>
-</ol>
+<p>Simply replace <strong>{fuid}</strong> with the user&rsquo;s Facebook User ID.</p>
+<pre class="highlight html tab-html"><code><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"http://graph.facebook.com/{fuid}/picture?type=large"</span> <span class="na">target=</span><span class="s">"_blank"</span><span class="nt">&gt;</span>http://graph.facebook
+.com/{fuid}/picture?type=large<span class="nt">&lt;/a&gt;</span>
+</code></pre>
+<p>You can pull in a larger version of the profile picutre using the following HTML:</p>
 
-<p><a href="#">http://graph.facebook.com/{fuid}/picture</a></p>
-
-<p>or</p>
-
-<p><a href="http://graph.facebook.com/10209560720107355/picture?type=large" target="\_blank">http://graph.facebook
-.com/10209560720107355/picture?type=large</a></p>
-
-<ol>
-<li>You can also review Facebook&rsquo;s <a href="https://developers.facebook.com/docs/graph-api/reference/user/picture/" target="\_blank">docs</a> on how to use the Graph API.</li>
-</ol>
+<p>Finally, you can refer to <a href="https://developers.facebook.com/docs/graph-api/reference/user/picture/">Facebook&rsquo;s Docs</a> on their Graph API, and use the information to create whatever type of integration with Facebook that you desire.</p>
 
 <h2 id="amazon-aws-and-s3-integrations">Amazon AWS and S3 Integrations</h2>
 
@@ -6143,12 +6415,15 @@ It also requires a &lsquo;&lt;user key&gt;&rsquo; for your app - you can find th
 <li>Copy &lsquo;Consumer Secret&rsquo; into the secret variable in the code</li>
 </ol>
 
-<p>Once you&rsquo;ve obtained the consumer key and the consumer secret, you&rsquo;ll need to enable server-side security in Salesforce. To do so, follow these steps:
-1. From App Manager, select your new App and Click &lsquo;Manage&rsquo;
-2. Click &lsquo;Edit Polices&rsquo;
-3. Change &lsquo;IP Relaxation&rsquo; to &lsquo;Relax IP Restriction,&rsquo; or add Backand&rsquo;s IP to your organization&rsquo;s IP restrictions
-4. Change &lsquo;Timeout Value&rsquo; to 24 hours
-5. Click &lsquo;Save&rsquo;</p>
+<p>Once you&rsquo;ve obtained the consumer key and the consumer secret, you&rsquo;ll need to enable server-side security in Salesforce. To do so, follow these steps:</p>
+
+<ol>
+<li>From App Manager, select your new App and Click &lsquo;Manage&rsquo;</li>
+<li>Click &lsquo;Edit Polices&rsquo;</li>
+<li>Change &lsquo;IP Relaxation&rsquo; to &lsquo;Relax IP Restriction,&rsquo; or add Backand&rsquo;s IP to your organization&rsquo;s IP restrictions</li>
+<li>Change &lsquo;Timeout Value&rsquo; to 24 hours</li>
+<li>Click &lsquo;Save&rsquo;</li>
+</ol>
 
 <p>With that completed, you should now have full access to your CRM objects using the Salesforce REST API.</p>
 
