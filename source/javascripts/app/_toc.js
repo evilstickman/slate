@@ -1,12 +1,23 @@
 //= require ../lib/_jquery
-//= require ../lib/_jquery_ui
-//= require ../lib/_jquery.tocify
 //= require ../lib/_imagesloaded.min
-(function (global) {
+;(function () {
   'use strict';
 
+  var debounce = function(func, waitTime) {
+    var timeout = false;
+    return function() {
+      if (timeout === false) {
+        setTimeout(function() {
+          func();
+          timeout = false;
+        }, waitTime);
+        timeout = true;
+      }
+    };
+  };
+
   var closeToc = function() {
-    $(".tocify-wrapper").removeClass('open');
+    $(".toc-wrapper").removeClass('open');
     $("#nav-button").removeClass('open');
   };
 
@@ -25,32 +36,54 @@
       hashGenerator: function (text, element) {
         return element.prop('id');
       }
-    }).data('toc-tocify');
 
-    $("#nav-button").click(function() {
-      $(".tocify-wrapper").toggleClass('open');
-      $("#nav-button").toggleClass('open');
-      return false;
-    });
+      var $best = $toc.find("[href='" + best + "']").first();
+      if (!$best.hasClass("active")) {
+        // .active is applied to the ToC link we're currently on, and its parent <ul>s selected by tocListSelector
+        // .active-expanded is applied to the ToC links that are parents of this one
+        $toc.find(".active").removeClass("active");
+        $toc.find(".active-parent").removeClass("active-parent");
+        $best.addClass("active");
+        $best.parents(tocListSelector).addClass("active").siblings(tocLinkSelector).addClass('active-parent');
+        $best.siblings(tocListSelector).addClass("active");
+        $toc.find(tocListSelector).filter(":not(.active)").slideUp(150);
+        $toc.find(tocListSelector).filter(".active").slideDown(150);
+        if (window.history.pushState) {
+          window.history.pushState(null, "", best);
+        }
+        // TODO remove classnames
+        document.title = $best.data("title") + " – " + originalTitle;
+      }
+    };
 
-    $(".page-wrapper").click(closeToc);
-    $(".tocify-item").click(closeToc);
-  };
+    var makeToc = function() {
+      recacheHeights();
+      refreshToc();
 
-  // Hack to make already open sections to start opened,
-  // instead of displaying an ugly animation
-  function animate() {
-    setTimeout(function() {
-      toc.setOption('showEffectSpeed', 180);
-    }, 50);
+      $("#nav-button").click(function() {
+        $(".toc-wrapper").toggleClass('open');
+        $("#nav-button").toggleClass('open');
+        return false;
+      });
+      $(".page-wrapper").click(closeToc);
+      $(".toc-link").click(closeToc);
+
+      // reload immediately after scrolling on toc click
+      $toc.find(tocLinkSelector).click(function() {
+        setTimeout(function() {
+          refreshToc();
+        }, 0);
+      });
+
+      $(window).scroll(debounce(refreshToc, 200));
+      $(window).resize(debounce(recacheHeights, 200));
+    };
+
+    makeToc();
+
+    window.recacheHeights = recacheHeights;
+    window.refreshToc = refreshToc;
   }
 
-  $(function() {
-    makeToc();
-    animate();
-    setupLanguages($('body').data('languages'));
-    $('.content').imagesLoaded( function() {
-      global.toc.calculateHeights();
-    });
-  });
-})(window);
+  window.loadToc = loadToc;
+})();
