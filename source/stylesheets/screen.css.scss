@@ -159,6 +159,32 @@ html, body {
     color: $nav-active-text;
   }
 
+  // Subheaders are the submenus that slide open
+  // in the table of contents.
+  .tocify-subheader {
+    background-color: $nav-subitem-bg;
+    padding-left: $nav-padding;
+    .tocify-subheader {
+      display: none; // tocify will override this when needed
+      background-color: $nav-sub-subitem-bg;
+
+      font-weight: 500;
+      .tocify-item>a {
+        padding-left: $nav-padding + $nav-indent;
+        font-size: 12px;
+      }
+
+      // for embossed look:
+      @include embossed-bg;
+      &>li:last-child {
+        box-shadow: none; // otherwise it'll overflow out of the subheader
+      }
+    }
+    // for embossed look:
+    @include embossed-bg;
+    &>li:last-child {
+      box-shadow: none; // otherwise it'll overflow out of the subheader
+    }
   // this is parent links of the currently selected ToC entry
   .toc-link.active-parent {
     background-color: $nav-active-parent-bg;

@@ -21,22 +21,6 @@
     $("#nav-button").removeClass('open');
   };
 
-<<<<<<< HEAD
-  var makeToc = function() {
-    global.toc = $("#toc").tocify({
-      selectors: 'h1, h2, h3, h4, h5, h6',
-      extendPage: false,
-      theme: 'none',
-      smoothScroll: false,
-      showEffectSpeed: 0,
-      hideEffectSpeed: 180,
-      ignoreSelector: '.toc-ignore',
-      highlightOffset: 60,
-      scrollTo: -1,
-      scrollHistory: true,
-      hashGenerator: function (text, element) {
-        return element.prop('id');
-=======
   function loadToc($toc, tocLinkSelector, tocListSelector, scrollOffset) {
     var headerHeights = {};
     var pageHeight = 0;
@@ -71,7 +55,6 @@
         if ((headerHeights[name] < currentTop && headerHeights[name] > headerHeights[best]) || best === null) {
           best = name;
         }
->>>>>>> f326b1fa5e45471df210e543c16954ebe5f771a6
       }
 
       var $best = $toc.find("[href='" + best + "']").first();
@@ -117,15 +100,6 @@
     };
 
     makeToc();
-<<<<<<< HEAD
-    animate();
-    setupLanguages($('body').data('languages'));
-    $('.content').imagesLoaded( function() {
-      global.toc.calculateHeights();
-    });
-  });
-})(window);
-=======
 
     window.recacheHeights = recacheHeights;
     window.refreshToc = refreshToc;
@@ -133,4 +107,3 @@
 
   window.loadToc = loadToc;
 })();
->>>>>>> f326b1fa5e45471df210e543c16954ebe5f771a6
